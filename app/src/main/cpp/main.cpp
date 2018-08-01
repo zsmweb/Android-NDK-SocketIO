@@ -372,6 +372,9 @@ MAIN_FUNC
 
         char soc[PROP_VALUE_MAX +1] = "qcom";
         __system_property_get("ro.soc.vendor", soc);
+        if(strlen(soc)==0){
+            __system_property_get("debug.soc", soc);
+        }
         string socs = soc;
         if(socs == "qcom"){
             gpuReader = new QcomGpuReader();
