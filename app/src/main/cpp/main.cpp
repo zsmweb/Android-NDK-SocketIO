@@ -340,10 +340,21 @@ static int writeFile(string path,string data){
     return 0;
 }
 
-
+#include <boost/algorithm/string.hpp>
 
 MAIN_FUNC
 {
+    string url = "http://127.0.0.1:3000";
+    if(argc >= 2){
+        string ip = readLineByLineBoost("/data/local/tmp/ipaddr");
+        if(ip.length()>0){
+            url = "http://";
+            url += boost::algorithm::replace_all_copy(ip,"\\n","");
+            url += ":3000";
+            cout<<"use remote ip:"<<url<<endl;
+        }
+    }
+
     {
         num_cpus = std::thread::hardware_concurrency();
         std::cout << "Launching " << num_cpus << " threads\n";
@@ -379,7 +390,7 @@ MAIN_FUNC
     h.set_open_listener(std::bind(&connection_listener::on_connected, &l));
     h.set_close_listener(std::bind(&connection_listener::on_close, &l,std::placeholders::_1));
     h.set_fail_listener(std::bind(&connection_listener::on_fail, &l));
-    h.connect("http://127.0.0.1:3000");
+    h.connect(url);
     _lock.lock();
     if(!connect_finish)
     {
@@ -388,13 +399,13 @@ MAIN_FUNC
     _lock.unlock();
 	current_socket = h.socket();
 Login:
-    string nickname;
-    while (nickname.length() == 0) {
-        HIGHLIGHT("Type your nickname:");
-        
-        getline(cin, nickname);
-
-    }
+    string nickname = "client";
+//    while (nickname.length() == 0) {
+//        HIGHLIGHT("Type your nickname:");
+//
+//        getline(cin, nickname);
+//
+//    }
 	current_socket->on("login", sio::socket::event_listener_aux([&](string const& name, message::ptr const& data, bool isAck,message::list &ack_resp){
         _lock.lock();
         participants = data->get_map()["numUsers"]->get_int();
