@@ -12,7 +12,7 @@ android {
         externalNativeBuild {
             cmake {
                 targets "sioclient", "sio_console_demo"
-                abiFilters 'arm64-v8a' , 'armeabi-v7a'
+                abiFilters 'arm64-v8a' //, 'armeabi-v7a'
                 arguments '-DANDROID_TOOLCHAIN=clang'
                 cppFlags "-frtti -fexceptions -std=c++11"
             }
