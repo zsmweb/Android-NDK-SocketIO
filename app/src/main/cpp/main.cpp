@@ -31,6 +31,8 @@ using namespace std;
 std::mutex _lock;
 std::condition_variable_any _cond;
 bool connect_finish = false;
+string cputemppath = "/sys/class/meizu/cpu_temp/temp";
+string pcbtemppath = "/sys/class/meizu/pcb_temp/temp";
 socket::ptr current_socket;
 
 char*  watchfd_to_name[512]={0};
@@ -296,9 +298,13 @@ static void *doJsonData(void* arg){
         json << "\",\"gpufreq\":\"";
         json << gpuReader->getGpuFreq();
         json << "\",\"cputemp\":\"";
-        json << readFreq("/sys/class/meizu/cpu_temp/temp");
+
+        json << readFreq((char*)cputemppath.c_str());
+
         json << "\",\"pcbtemp\":\"";
-        json << readFreq("/sys/class/meizu/pcb_temp/temp");
+
+        json << readFreq((char*)pcbtemppath.c_str());
+
         json << "\",\"cpus\":[";
         map<int, string>::iterator iter;
         int idx=0;
@@ -382,6 +388,15 @@ MAIN_FUNC
             gpuReader = new MtkGpuReader();
         } else{
             gpuReader = new SamsungGpuReader();
+        }
+
+        __system_property_get("debug.cputemp", soc);
+        if(strlen(soc)){
+            cputemppath = soc;
+        }
+        __system_property_get("debug.pcbtemp", soc);
+        if(strlen(soc)){
+            pcbtemppath = soc;
         }
     }
 

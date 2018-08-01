@@ -10,7 +10,8 @@ int readFreq(char* path){
     char buf[128];
     fstream s(path, s.in);
     if (!s.is_open()) {
-        std::cout << "failed to open " << path << '\n';
+        //std::cout << "failed to open " << path << '\n';
+        return 0;
     } else {
         s.read(buf,128);
         s.close();
